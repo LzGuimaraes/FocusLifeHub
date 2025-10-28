@@ -1,8 +1,9 @@
-package dev.LzGuimaraes.FocusLifeHub.Financas;
+package dev.LzGuimaraes.FocusLifeHub.Contas;
+
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import dev.LzGuimaraes.FocusLifeHub.User.UserModel;
+import dev.LzGuimaraes.FocusLifeHub.Financas.FinancasModel;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -15,18 +16,19 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name="tb_financas")
+@Table(name= "tb_contas")
 @Getter
 @Setter
-public class FinancasModel {
+public class ContasModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nome;
-    private String moeda;
+    private String tipo;
+    private Float saldo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "financas_id")
     @JsonIgnore
-    private UserModel user;
+    private FinancasModel financas;
 }
