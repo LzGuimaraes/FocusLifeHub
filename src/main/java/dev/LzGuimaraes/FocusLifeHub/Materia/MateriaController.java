@@ -45,7 +45,7 @@ public class MateriaController {
     }
 
     @PutMapping("alter/{id}")
-    public MateriaResponseDTO alterarMateria(@RequestBody Long id,@Valid @RequestBody MateriaRequestDTO updatedMateria) {
+    public MateriaResponseDTO alterarMateria(@PathVariable Long id, @Valid @RequestBody MateriaRequestDTO updatedMateria) {
         return materiaService.alterarMateria(id, updatedMateria);
     }
 
