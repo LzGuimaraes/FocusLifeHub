@@ -1,15 +1,15 @@
-package dev.LzGuimaraes.Metas;
+package dev.LzGuimaraes.FocusLifeHub.Metas;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import dev.LzGuimaraes.FocusLifeHub.Exceptions.ResourceNotFoundException;
+import dev.LzGuimaraes.FocusLifeHub.Metas.Enum.MetaStatus;
+import dev.LzGuimaraes.FocusLifeHub.Metas.dto.MetasRequestDTO;
+import dev.LzGuimaraes.FocusLifeHub.Metas.dto.MetasResponseDTO;
 import dev.LzGuimaraes.FocusLifeHub.User.UserModel;
-import dev.LzGuimaraes.FocusLifeHub.User.UserRepository; 
-import dev.LzGuimaraes.Metas.Enum.MetaStatus;
-import dev.LzGuimaraes.Metas.dto.MetasRequestDTO;
-import dev.LzGuimaraes.Metas.dto.MetasResponseDTO;
+import dev.LzGuimaraes.FocusLifeHub.User.UserRepository;
 
 @Service
 public class MetasService {

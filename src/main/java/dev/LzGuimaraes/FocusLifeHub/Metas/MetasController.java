@@ -1,4 +1,4 @@
-package dev.LzGuimaraes.Metas;
+package dev.LzGuimaraes.FocusLifeHub.Metas;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import dev.LzGuimaraes.Metas.dto.MetasRequestDTO;
-import dev.LzGuimaraes.Metas.dto.MetasResponseDTO;
+import dev.LzGuimaraes.FocusLifeHub.Metas.dto.MetasRequestDTO;
+import dev.LzGuimaraes.FocusLifeHub.Metas.dto.MetasResponseDTO;
 import jakarta.validation.Valid;
 
 @RestController

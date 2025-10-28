@@ -1,14 +1,14 @@
-package dev.LzGuimaraes.Metas;
+package dev.LzGuimaraes.FocusLifeHub.Metas;
 
 import org.springframework.stereotype.Component;
 
+import dev.LzGuimaraes.FocusLifeHub.Metas.dto.MetasRequestDTO;
+import dev.LzGuimaraes.FocusLifeHub.Metas.dto.MetasResponseDTO;
 import dev.LzGuimaraes.FocusLifeHub.User.UserModel;
-import dev.LzGuimaraes.Metas.dto.MetasRequestDTO;
-import dev.LzGuimaraes.Metas.dto.MetasResponseDTO;
 
 @Component
 public class MetasMapper {
-    
+
     public MetasModel toModel(MetasRequestDTO dto, UserModel user) {
         if (dto == null) {
             return null;

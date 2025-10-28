@@ -1,4 +1,4 @@
-package dev.LzGuimaraes.Metas.Enum;
+package dev.LzGuimaraes.FocusLifeHub.Metas.Enum;
 
 public enum MetaStatus {
     Ativa,

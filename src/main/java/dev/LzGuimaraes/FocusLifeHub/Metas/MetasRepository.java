@@ -1,4 +1,4 @@
-package dev.LzGuimaraes.Metas;
+package dev.LzGuimaraes.FocusLifeHub.Metas;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

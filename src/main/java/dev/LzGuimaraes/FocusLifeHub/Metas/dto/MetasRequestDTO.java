@@ -1,8 +1,8 @@
-package dev.LzGuimaraes.Metas.dto;
+package dev.LzGuimaraes.FocusLifeHub.Metas.dto;
 
 import java.util.Date;
 
-import dev.LzGuimaraes.Metas.Enum.MetaStatus;
+import dev.LzGuimaraes.FocusLifeHub.Metas.Enum.MetaStatus;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

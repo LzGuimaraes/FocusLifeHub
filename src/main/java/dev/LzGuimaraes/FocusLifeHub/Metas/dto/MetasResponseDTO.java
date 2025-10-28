@@ -1,8 +1,8 @@
-package dev.LzGuimaraes.Metas.dto;
+package dev.LzGuimaraes.FocusLifeHub.Metas.dto;
 
 import java.util.Date;
 
-import dev.LzGuimaraes.Metas.Enum.MetaStatus;
+import dev.LzGuimaraes.FocusLifeHub.Metas.Enum.MetaStatus;
 
 public record MetasResponseDTO(
     Long id,
