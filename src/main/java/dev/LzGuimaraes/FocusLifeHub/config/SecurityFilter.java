@@ -2,6 +2,7 @@ package dev.LzGuimaraes.FocusLifeHub.config;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.util.Strings;
@@ -23,34 +24,42 @@ public class SecurityFilter extends OncePerRequestFilter {
         this.tokenConfig = tokenConfig;
     }
 
-    @Override
+        @Override
     protected void doFilterInternal(
         HttpServletRequest request,
         HttpServletResponse response,
         FilterChain filterChain
-    ) throws ServletException, IOException {
+) throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization");
+        String token = null;
 
-        if (Strings.isNotEmpty(authHeader) && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
+    
+    String authHeader = request.getHeader("Authorization");
+    if (Strings.isNotEmpty(authHeader) && authHeader.startsWith("Bearer ")) {
+        token = authHeader.substring(7);
+    }
 
-            Optional<JWTUserData> optUser = tokenConfig.validateToken(token);
-
-            if (optUser.isPresent()) {
-                JWTUserData userData = optUser.get();
-
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                            userData,        
-                            null,            
-                            Collections.emptyList() 
-                        );
-
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+    
+    if (token == null && request.getCookies() != null) {
+        for (Cookie cookie : request.getCookies()) {
+            if ("jwt".equals(cookie.getName())) {
+                token = cookie.getValue();
+                break;
             }
         }
+    }
 
-        filterChain.doFilter(request, response);
+if (Strings.isNotEmpty(token)) {
+    Optional<JWTUserData> optUser = tokenConfig.validateToken(token);
+    if (optUser.isPresent()) {
+        JWTUserData userData = optUser.get();
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(userData, null, Collections.emptyList());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+}
+
+filterChain.doFilter(request, response);
+
     }
 }
