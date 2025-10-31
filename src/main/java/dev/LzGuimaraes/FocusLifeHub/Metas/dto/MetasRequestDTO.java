@@ -20,7 +20,5 @@ public record MetasRequestDTO(
     @NotNull(message = "O prazo é obrigatório")
     @Future(message = "O prazo deve ser uma data futura")
     Date prazo,
-    MetaStatus status, 
-    @NotNull(message = "O user_id é obrigatório")
-    Long user_id
+    MetaStatus status
 ) {}

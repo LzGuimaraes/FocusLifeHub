@@ -2,12 +2,15 @@ package dev.LzGuimaraes.FocusLifeHub.Metas;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder; 
 import org.springframework.stereotype.Service;
 
 import dev.LzGuimaraes.FocusLifeHub.Exceptions.ResourceNotFoundException;
 import dev.LzGuimaraes.FocusLifeHub.Metas.Enum.MetaStatus;
 import dev.LzGuimaraes.FocusLifeHub.Metas.dto.MetasRequestDTO;
 import dev.LzGuimaraes.FocusLifeHub.Metas.dto.MetasResponseDTO;
+import dev.LzGuimaraes.FocusLifeHub.Security.JWTUserData; 
 import dev.LzGuimaraes.FocusLifeHub.User.UserModel;
 import dev.LzGuimaraes.FocusLifeHub.User.UserRepository;
 
@@ -15,36 +18,49 @@ import dev.LzGuimaraes.FocusLifeHub.User.UserRepository;
 public class MetasService {
 
     private final MetasRepository metasRepository;
-    private final UserRepository userRepository; 
+    private final UserRepository userRepository;
     private final MetasMapper metasMapper;
 
-    public MetasService( MetasRepository metasRepository, UserRepository userRepository, MetasMapper metasMapper) {
-                
+    public MetasService(MetasRepository metasRepository, UserRepository userRepository, MetasMapper metasMapper) {
         this.metasRepository = metasRepository;
         this.userRepository = userRepository;
         this.metasMapper = metasMapper;
-        
+    }
+
+    private Long getAuthenticatedUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        JWTUserData jwtData = (JWTUserData) authentication.getPrincipal();
+        return jwtData.userId();
     }
 
     public Page<MetasResponseDTO> getAllMetas(Pageable pageable) {
-        return metasRepository.findAll(pageable)
+        Long userId = getAuthenticatedUserId();
+        return metasRepository.findByUserId(userId, pageable)
                 .map(metasMapper::toResponse);
     }
 
     public MetasResponseDTO getMetaById(Long id) {
-        return metasRepository.findById(id)
-                .map(metasMapper::toResponse)
+        Long userId = getAuthenticatedUserId();
+        MetasModel meta = metasRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Meta com ID " + id + " não encontrada"));
+
+        if (!meta.getUser().getId().equals(userId)) {
+            throw new ResourceNotFoundException("Meta com ID " + id + " não encontrada");
+        }
+
+        return metasMapper.toResponse(meta);
     }
 
     public MetasResponseDTO createMeta(MetasRequestDTO dto) {
+        Long authenticatedUserId = getAuthenticatedUserId(); 
+        
         UserModel user = userRepository.findById(dto.user_id())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário com ID " + dto.user_id() + " não encontrado"));
 
         MetasModel meta = metasMapper.toModel(dto, user);
 
-        meta.setStatus(MetaStatus.PENDENTE); 
-        meta.setPrograsso(0.0f); 
+        meta.setStatus(MetaStatus.PENDENTE);
+        meta.setPrograsso(0.0f);
 
         MetasModel savedMeta = metasRepository.save(meta);
 
@@ -52,10 +68,13 @@ public class MetasService {
     }
 
     public MetasResponseDTO updateMeta(Long id, MetasRequestDTO dto) {
-
+        Long userId = getAuthenticatedUserId();
         MetasModel meta = metasRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Meta com ID " + id + " não encontrada para alteração"));
 
+        if (!meta.getUser().getId().equals(userId)) {
+            throw new ResourceNotFoundException("Meta com ID " + id + " não encontrada");
+        }
         if (dto.titulo() != null && !dto.titulo().isBlank()) {
             meta.setTitulo(dto.titulo());
         }
@@ -72,21 +91,20 @@ public class MetasService {
             meta.setStatus(dto.status());
         }
 
-        if (dto.user_id() != null && !dto.user_id().equals(meta.getUser().getId())) {
-            UserModel newUser = userRepository.findById(dto.user_id())
-                    .orElseThrow(() -> new ResourceNotFoundException("Novo usuário com ID " + dto.user_id() + " não encontrado"));
-            meta.setUser(newUser);
-        }
-
         MetasModel updatedMeta = metasRepository.save(meta);
 
         return metasMapper.toResponse(updatedMeta);
     }
 
     public void deleteMeta(Long id) {
-        if (!metasRepository.existsById(id)) {
+        Long userId = getAuthenticatedUserId();
+        MetasModel meta = metasRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Meta com ID " + id + " não encontrada para exclusão"));
+
+        if (!meta.getUser().getId().equals(userId)) {
             throw new ResourceNotFoundException("Meta com ID " + id + " não encontrada para exclusão");
         }
+
         metasRepository.deleteById(id);
     }
 }
