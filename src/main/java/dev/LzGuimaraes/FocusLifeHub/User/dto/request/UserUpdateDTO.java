@@ -1,13 +1,12 @@
 package dev.LzGuimaraes.FocusLifeHub.User.dto.request;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public record UserUpdateDTO(
-    @NotBlank(message = "O nome é obrigatório")
     String nome,
-
-    @NotBlank(message = "O email é obrigatório")
     @Email(message = "Formato de email inválido")
-    String email
+    String email,
+    @Size(min = 8, message = "A nova senha deve ter pelo menos 8 caracteres")
+    String password
 ) {}
