@@ -53,7 +53,7 @@ public class AuthController {
 
         ResponseCookie jwtCookie = ResponseCookie.from("jwt", token)
             .httpOnly(true)
-            .secure(false) // Alterar sempre em Prod para "true"
+            .secure(true) // Alterar sempre em Prod para "true"
             .sameSite("None")// Alterar em prod
             .path("/")
             .maxAge(7 * 24 * 60 * 60)

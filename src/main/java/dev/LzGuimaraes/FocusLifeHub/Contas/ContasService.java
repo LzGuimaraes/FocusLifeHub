@@ -56,12 +56,19 @@ public class ContasService {
                 .orElseThrow(() -> new ResourceNotFoundException("Carteira (Financa) com ID " + dto.financas_id() + " não encontrada"));
 
         ContasModel conta = contasMapper.toModel(dto, financa);
-        conta.setSaldo(0.0f);
 
+        float saldoInicial = dto.saldo() != null ? dto.saldo() : 0f;
+
+        if ("Despesa".equalsIgnoreCase(dto.tipo())) {
+            saldoInicial = -Math.abs(saldoInicial);
+        } else {
+            saldoInicial = Math.abs(saldoInicial);
+        }
+
+        conta.setSaldo(saldoInicial);
         ContasModel savedConta = contasRepository.save(conta);
-
         return contasMapper.toResponse(savedConta);
-    }
+        }
 
     public ContasResponseDTO updateConta(Long id, ContasRequestDTO dto) {
         ContasModel conta = contasRepository.findById(id)
@@ -70,6 +77,7 @@ public class ContasService {
         if (dto.nome() != null && !dto.nome().isBlank()) {
             conta.setNome(dto.nome());
         }
+
         if (dto.tipo() != null && !dto.tipo().isBlank()) {
             conta.setTipo(dto.tipo());
         }
@@ -80,11 +88,23 @@ public class ContasService {
             conta.setFinancas(newFinanca);
         }
 
+        if (dto.saldo() != null) {
+            float novoSaldo = dto.saldo();
+
+            if ("Despesa".equalsIgnoreCase(conta.getTipo())) {
+                novoSaldo = -Math.abs(novoSaldo);
+            } else {
+                novoSaldo = Math.abs(novoSaldo);
+            }
+
+            conta.setSaldo(novoSaldo);
+        }
 
         ContasModel updatedConta = contasRepository.save(conta);
 
         return contasMapper.toResponse(updatedConta);
     }
+
 
     public void deleteConta(Long id) {
         if (!contasRepository.existsById(id)) {

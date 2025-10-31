@@ -24,7 +24,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         this.tokenConfig = tokenConfig;
     }
 
-        @Override
+    @Override
     protected void doFilterInternal(
         HttpServletRequest request,
         HttpServletResponse response,
