@@ -6,7 +6,6 @@ import dev.LzGuimaraes.FocusLifeHub.Tarefas.Enum.Prioridade;
 import dev.LzGuimaraes.FocusLifeHub.Tarefas.Enum.TarefaStatus;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 public record TarefasRequestDTO(
 

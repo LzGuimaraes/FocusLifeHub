@@ -2,6 +2,8 @@ package dev.LzGuimaraes.FocusLifeHub.Tarefas;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import dev.LzGuimaraes.FocusLifeHub.Exceptions.ResourceNotFoundException;
@@ -11,6 +13,7 @@ import dev.LzGuimaraes.FocusLifeHub.Tarefas.dto.TarefasRequestDTO;
 import dev.LzGuimaraes.FocusLifeHub.Tarefas.dto.TarefasResponseDTO;
 import dev.LzGuimaraes.FocusLifeHub.User.UserModel;
 import dev.LzGuimaraes.FocusLifeHub.User.UserRepository;
+import dev.LzGuimaraes.FocusLifeHub.config.JWTUserData;
 
 @Service
 public class TarefasService {
@@ -34,7 +37,11 @@ public class TarefasService {
 
     public Page<TarefasResponseDTO> getAllTarefas(Pageable pageable) {
         Long userId = getAuthenticatedUserId();
-        return tarefasRepository.findAll(pageable)
+        
+        // CORREÇÃO 1:
+        // Trocamos 'findAll(pageable)' por 'findByUserId(userId, pageable)'
+        // para buscar apenas as tarefas do usuário autenticado.
+        return tarefasRepository.findByUserId(userId, pageable) 
                 .map(tarefasMapper::toResponse);
     }
 
@@ -52,8 +59,12 @@ public class TarefasService {
 
     public TarefasResponseDTO createTarefa(TarefasRequestDTO dto) {
         Long userId = getAuthenticatedUserId();
-        UserModel user = userRepository.findById(dto.user_id())
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário com ID " + dto.user_id() + " não encontrado"));
+        
+        // CORREÇÃO 2:
+        // Trocamos 'dto.user_id()' (que não existe) pela variável 'userId'
+        // que foi obtida da autenticação na linha acima.
+        UserModel user = userRepository.findById(userId) 
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário com ID " + userId + " não encontrado"));
 
         TarefasModel tarefa = tarefasMapper.toModel(dto, user);
         tarefa.setStatus(TarefaStatus.PENDENTE);

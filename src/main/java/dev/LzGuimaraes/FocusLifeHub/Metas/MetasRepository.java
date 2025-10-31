@@ -8,4 +8,5 @@ import org.springframework.data.domain.Page;
 @Repository
 public interface MetasRepository extends JpaRepository<MetasModel, Long> {
     Page<MetasModel> findByUserId(Long userId, Pageable pageable);
+    
 }

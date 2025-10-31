@@ -54,8 +54,8 @@ public class MetasService {
     public MetasResponseDTO createMeta(MetasRequestDTO dto) {
         Long authenticatedUserId = getAuthenticatedUserId(); 
         
-        UserModel user = userRepository.findById(dto.user_id())
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário com ID " + dto.user_id() + " não encontrado"));
+        UserModel user = userRepository.findById(authenticatedUserId)
+        .orElseThrow(() -> new ResourceNotFoundException("Usuário autenticado com ID " + authenticatedUserId + " não encontrado"));
 
         MetasModel meta = metasMapper.toModel(dto, user);
 
