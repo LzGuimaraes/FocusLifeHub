@@ -11,7 +11,7 @@ import dev.LzGuimaraes.FocusLifeHub.Estudos.dto.EstudosRequestDTO;
 import dev.LzGuimaraes.FocusLifeHub.Estudos.dto.EstudosResponseDTO;
 import dev.LzGuimaraes.FocusLifeHub.Materia.MateriaModel;
 import dev.LzGuimaraes.FocusLifeHub.Materia.MateriaRepository;
-import dev.LzGuimaraes.FocusLifeHub.Security.JWTUserData; 
+import dev.LzGuimaraes.FocusLifeHub.config.JWTUserData;
 
 @Service
 public class EstudosService {

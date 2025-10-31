@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import dev.LzGuimaraes.FocusLifeHub.Exceptions.ResourceNotFoundException;
 import dev.LzGuimaraes.FocusLifeHub.Materia.dto.MateriaRequestDTO;
 import dev.LzGuimaraes.FocusLifeHub.Materia.dto.MateriaResponseDTO;
-import dev.LzGuimaraes.FocusLifeHub.Security.JWTUserData; 
+import dev.LzGuimaraes.FocusLifeHub.config.JWTUserData;
 import dev.LzGuimaraes.FocusLifeHub.User.UserModel;
 import dev.LzGuimaraes.FocusLifeHub.User.UserRepository;
 

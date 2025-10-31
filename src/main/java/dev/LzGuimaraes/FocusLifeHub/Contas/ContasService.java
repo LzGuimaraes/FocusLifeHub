@@ -14,7 +14,7 @@ import dev.LzGuimaraes.FocusLifeHub.Contas.dto.ContasRequestDTO;
 import dev.LzGuimaraes.FocusLifeHub.Contas.dto.ContasResponseDTO;
 import dev.LzGuimaraes.FocusLifeHub.Financas.FinancasModel;
 import dev.LzGuimaraes.FocusLifeHub.Financas.FinancasRepository;
-import dev.LzGuimaraes.FocusLifeHub.Security.JWTUserData;
+import dev.LzGuimaraes.FocusLifeHub.config.JWTUserData;
 
 @Service
 public class ContasService {

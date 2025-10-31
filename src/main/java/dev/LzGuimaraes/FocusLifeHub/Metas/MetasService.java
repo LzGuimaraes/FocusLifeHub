@@ -10,7 +10,7 @@ import dev.LzGuimaraes.FocusLifeHub.Exceptions.ResourceNotFoundException;
 import dev.LzGuimaraes.FocusLifeHub.Metas.Enum.MetaStatus;
 import dev.LzGuimaraes.FocusLifeHub.Metas.dto.MetasRequestDTO;
 import dev.LzGuimaraes.FocusLifeHub.Metas.dto.MetasResponseDTO;
-import dev.LzGuimaraes.FocusLifeHub.Security.JWTUserData; 
+import dev.LzGuimaraes.FocusLifeHub.config.JWTUserData; 
 import dev.LzGuimaraes.FocusLifeHub.User.UserModel;
 import dev.LzGuimaraes.FocusLifeHub.User.UserRepository;
 
