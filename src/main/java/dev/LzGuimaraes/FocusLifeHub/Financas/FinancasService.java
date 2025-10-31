@@ -2,11 +2,14 @@ package dev.LzGuimaraes.FocusLifeHub.Financas;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder; 
 import org.springframework.stereotype.Service;
 
 import dev.LzGuimaraes.FocusLifeHub.Exceptions.ResourceNotFoundException;
 import dev.LzGuimaraes.FocusLifeHub.Financas.dto.FinancasRequestDTO;
 import dev.LzGuimaraes.FocusLifeHub.Financas.dto.FinancasResponseDTO;
+import dev.LzGuimaraes.FocusLifeHub.Security.JWTUserData;
 import dev.LzGuimaraes.FocusLifeHub.User.UserModel;
 import dev.LzGuimaraes.FocusLifeHub.User.UserRepository;
 
@@ -23,20 +26,34 @@ public class FinancasService {
         this.financasMapper = financasMapper;
     }
 
+    private Long getAuthenticatedUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        JWTUserData jwtData = (JWTUserData) authentication.getPrincipal();
+        return jwtData.userId();
+    }
+
     public Page<FinancasResponseDTO> getAllFinancas(Pageable pageable) {
-        return financasRepository.findAll(pageable)
+        Long userId = getAuthenticatedUserId();
+        return financasRepository.findByUserId(userId, pageable)
                 .map(financasMapper::toResponse);
     }
 
     public FinancasResponseDTO getFinancaById(Long id) {
-        return financasRepository.findById(id)
-                .map(financasMapper::toResponse)
+        Long userId = getAuthenticatedUserId();
+        FinancasModel financa = financasRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Conta financeira com ID " + id + " não encontrada"));
+
+        if (!financa.getUser().getId().equals(userId)) {
+            throw new ResourceNotFoundException("Conta financeira com ID " + id + " não encontrada");
+        }
+
+        return financasMapper.toResponse(financa);
     }
 
     public FinancasResponseDTO createFinanca(FinancasRequestDTO dto) {
-        UserModel user = userRepository.findById(dto.user_id())
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário com ID " + dto.user_id() + " não encontrado"));
+        Long authenticatedUserId = getAuthenticatedUserId();
+        UserModel user = userRepository.findById(authenticatedUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário com ID " + authenticatedUserId + " não encontrado"));
 
         FinancasModel financa = financasMapper.toModel(dto, user);
         FinancasModel savedFinanca = financasRepository.save(financa);
@@ -45,8 +62,13 @@ public class FinancasService {
     }
 
     public FinancasResponseDTO updateFinanca(Long id, FinancasRequestDTO dto) {
+        Long userId = getAuthenticatedUserId();
         FinancasModel financa = financasRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Conta financeira com ID " + id + " não encontrada para alteração"));
+
+        if (!financa.getUser().getId().equals(userId)) {
+            throw new ResourceNotFoundException("Conta financeira com ID " + id + " não encontrada para alteração");
+        }
 
         if (dto.nome() != null && !dto.nome().isBlank()) {
             financa.setNome(dto.nome());
@@ -55,20 +77,21 @@ public class FinancasService {
             financa.setMoeda(dto.moeda().toUpperCase());
         }
 
-        if (dto.user_id() != null && !dto.user_id().equals(financa.getUser().getId())) {
-            UserModel newUser = userRepository.findById(dto.user_id())
-                    .orElseThrow(() -> new ResourceNotFoundException("Novo usuário com ID " + dto.user_id() + " não encontrado"));
-            financa.setUser(newUser);
-        }
         FinancasModel updatedFinanca = financasRepository.save(financa);
 
         return financasMapper.toResponse(updatedFinanca);
     }
 
     public void deleteFinanca(Long id) {
-        if (!financasRepository.existsById(id)) {
+        Long userId = getAuthenticatedUserId();
+
+        FinancasModel financa = financasRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Conta financeira com ID " + id + " não encontrada para exclusão"));
+
+        if (!financa.getUser().getId().equals(userId)) {
             throw new ResourceNotFoundException("Conta financeira com ID " + id + " não encontrada para exclusão");
         }
+
         financasRepository.deleteById(id);
     }
 }
