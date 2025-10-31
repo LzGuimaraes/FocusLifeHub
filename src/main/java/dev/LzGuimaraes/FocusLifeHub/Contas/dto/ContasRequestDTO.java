@@ -7,12 +7,9 @@ public record ContasRequestDTO(
 
     @NotBlank(message = "O nome da conta é obrigatório (ex: 'Conta Corrente')")
     String nome,
-
     @NotBlank(message = "O tipo da conta é obrigatório (ex: 'Despesa', 'Saldo')")
     String tipo,
-
     @NotNull(message = "O ID da carteira (financas_id) é obrigatório")
     Long financas_id,
-
     Float saldo 
 ) {}
