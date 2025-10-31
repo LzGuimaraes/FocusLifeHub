@@ -26,18 +26,32 @@ public class TarefasService {
                 this.tarefasMapper = tarefasMapper;
             }
 
+    private Long getAuthenticatedUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        JWTUserData jwtData = (JWTUserData) authentication.getPrincipal();
+        return jwtData.userId();
+    }
+
     public Page<TarefasResponseDTO> getAllTarefas(Pageable pageable) {
+        Long userId = getAuthenticatedUserId();
         return tarefasRepository.findAll(pageable)
                 .map(tarefasMapper::toResponse);
     }
 
     public TarefasResponseDTO getTarefaById(Long id) {
-        return tarefasRepository.findById(id)
-                .map(tarefasMapper::toResponse)
+        Long userId = getAuthenticatedUserId();
+        TarefasModel tarefa = tarefasRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tarefa com ID " + id + " não encontrada"));
+        
+        if (!tarefa.getUser().getId().equals(userId)) {
+            throw new ResourceNotFoundException("Tarefa com ID " + id + " não encontrada");
+        }
+        
+        return tarefasMapper.toResponse(tarefa);
     }
 
     public TarefasResponseDTO createTarefa(TarefasRequestDTO dto) {
+        Long userId = getAuthenticatedUserId();
         UserModel user = userRepository.findById(dto.user_id())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário com ID " + dto.user_id() + " não encontrado"));
 
@@ -49,13 +63,17 @@ public class TarefasService {
         }
 
         TarefasModel savedTarefa = tarefasRepository.save(tarefa);
-
         return tarefasMapper.toResponse(savedTarefa);
     }
 
     public TarefasResponseDTO updateTarefa(Long id, TarefasRequestDTO dto) {
+        Long userId = getAuthenticatedUserId();
         TarefasModel tarefa = tarefasRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Tarefa com ID " + id + " não encontrada para alteração"));
+                .orElseThrow(() -> new ResourceNotFoundException("Tarefa com ID " + id + " não encontrada"));
+
+        if (!tarefa.getUser().getId().equals(userId)) {
+            throw new ResourceNotFoundException("Tarefa com ID " + id + " não encontrada");
+        }
 
         if (dto.titulo() != null && !dto.titulo().isBlank()) {
             tarefa.setTitulo(dto.titulo());
@@ -70,21 +88,19 @@ public class TarefasService {
             tarefa.setPrazo(dto.prazo());
         }
 
-        if (dto.user_id() != null && !dto.user_id().equals(tarefa.getUser().getId())) {
-            UserModel newUser = userRepository.findById(dto.user_id())
-                    .orElseThrow(() -> new ResourceNotFoundException("Novo usuário com ID " + dto.user_id() + " não encontrado"));
-            tarefa.setUser(newUser);
-        }
-
         TarefasModel updatedTarefa = tarefasRepository.save(tarefa);
-
         return tarefasMapper.toResponse(updatedTarefa);
     }
 
     public void deleteTarefa(Long id) {
-        if (!tarefasRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Tarefa com ID " + id + " não encontrada para exclusão");
+        Long userId = getAuthenticatedUserId();
+        TarefasModel tarefa = tarefasRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tarefa com ID " + id + " não encontrada"));
+
+        if (!tarefa.getUser().getId().equals(userId)) {
+            throw new ResourceNotFoundException("Tarefa com ID " + id + " não encontrada");
         }
+
         tarefasRepository.deleteById(id);
     }
 }

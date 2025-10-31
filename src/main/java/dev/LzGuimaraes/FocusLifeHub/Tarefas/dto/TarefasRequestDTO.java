@@ -15,7 +15,5 @@ public record TarefasRequestDTO(
     TarefaStatus status, 
     Prioridade prioridade, 
     @FutureOrPresent(message = "O prazo não pode ser uma data passada")
-    Date prazo,
-    @NotNull(message = "O user_id é obrigatório")
-    Long user_id
+    Date prazo
 ) {}
