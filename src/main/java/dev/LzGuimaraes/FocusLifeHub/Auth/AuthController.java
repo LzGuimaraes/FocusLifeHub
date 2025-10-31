@@ -86,7 +86,7 @@ public class AuthController {
             ResponseCookie deleteCookie = ResponseCookie.from("jwt", "")
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("Strict")
+                .sameSite("None")
                 .path("/")
                 .maxAge(0)
                 .build();
