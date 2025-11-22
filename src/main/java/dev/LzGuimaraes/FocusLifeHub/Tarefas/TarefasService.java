@@ -37,10 +37,6 @@ public class TarefasService {
 
     public Page<TarefasResponseDTO> getAllTarefas(Pageable pageable) {
         Long userId = getAuthenticatedUserId();
-        
-        // CORREÇÃO 1:
-        // Trocamos 'findAll(pageable)' por 'findByUserId(userId, pageable)'
-        // para buscar apenas as tarefas do usuário autenticado.
         return tarefasRepository.findByUserId(userId, pageable) 
                 .map(tarefasMapper::toResponse);
     }
@@ -60,9 +56,6 @@ public class TarefasService {
     public TarefasResponseDTO createTarefa(TarefasRequestDTO dto) {
         Long userId = getAuthenticatedUserId();
         
-        // CORREÇÃO 2:
-        // Trocamos 'dto.user_id()' (que não existe) pela variável 'userId'
-        // que foi obtida da autenticação na linha acima.
         UserModel user = userRepository.findById(userId) 
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário com ID " + userId + " não encontrado"));
 
